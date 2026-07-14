@@ -52,8 +52,9 @@
   #vidLoop{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0}
   #inicio .velo{position:absolute; inset:0; z-index:1;
     background:radial-gradient(circle at 50% 40%, rgba(10,8,30,0) 30%, rgba(10,8,30,.45))}
-  #inicio .titulo{color:#fff; text-align:center; z-index:2; font-size:clamp(30px,7vw,62px); line-height:1.08;
-    text-shadow:0 4px 0 #7c5cff,0 8px 24px rgba(0,0,0,.55)}
+  #inicio .titulo{color:#ffd84d; text-align:center; z-index:2; font-size:clamp(32px,7.4vw,66px); line-height:1.08;
+    text-shadow:-3px 0 0 #8a2ca8, 3px 0 0 #8a2ca8, 0 -3px 0 #8a2ca8, 0 4px 0 #8a2ca8,
+      0 8px 0 #5e1c78, 0 14px 30px rgba(0,0,0,.65)}
   #inicio .sub{color:#ffe7f4; z-index:2; font-size:clamp(16px,3.4vw,24px); margin:8px 0 26px;
     text-shadow:0 2px 8px rgba(0,0,0,.6); text-align:center}
   #btnComenzar{z-index:2}
@@ -134,6 +135,8 @@
     padding:4px 16px; border-radius:20px; font-weight:700; font-size:16px}
   .pelusa{position:absolute; border-radius:50%; background:rgba(255,255,255,.95); pointer-events:none;
     animation:pelusaAnim 1s ease-out forwards}
+  .tex.squish{animation:squishAnim .45s ease}
+  @keyframes squishAnim{0%{transform:scale(1)} 40%{transform:scale(.93,.86)} 70%{transform:scale(1.02,1.04)} 100%{transform:scale(1)}}
   @keyframes pelusaAnim{0%{opacity:.95; transform:scale(.5)} 100%{opacity:0; transform:translateY(-34px) scale(1.3)}}
   /* gusto */
   #ruletaWrap{position:relative; width:min(56vw,300px); aspect-ratio:1}
@@ -267,7 +270,7 @@
     <div class="tex" id="texAlgodon" style="background-image:url('assets/img/tex-algodon.jpg')"><span class="etq">suave</span></div>
     <div class="tex" id="texLija" style="background-image:url('assets/img/tex-lija.jpg')"><span class="etq">áspera</span></div>
     <div class="tex" id="texPiedra" style="background-image:url('assets/img/tex-piedra.jpg')"><span class="etq">dura</span></div>
-    <div class="tex" id="texMasa" style="background:#f3e0c8"><canvas id="masaCanvas" style="width:100%;height:100%"></canvas><span class="etq">moldeable</span></div>
+    <div class="tex" id="texMasa" style="background-image:url('assets/img/tex-masa.jpg')"><span class="etq">moldeable</span></div>
   </div>
 </section>
 
@@ -357,6 +360,9 @@
   </div>
 </div>
 
+<div id="frascoPop" style="position:fixed;inset:0;z-index:45;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,20,55,.5)">
+  <div id="frascoPopIn" style="width:min(46vw,240px);animation:brinca 1s ease infinite"></div>
+</div>
 <div id="confeti"></div>
 <audio id="musica" src="assets/audio/musica.mp3" loop></audio>
 <audio id="musCalma" src="assets/audio/musica-calma.mp3" loop></audio>
@@ -424,7 +430,7 @@ function pop(){ beep(380+Math.random()*500,.18,'sine',.3); }
 const NOTAS=[261.6,293.7,329.6,392,440,523.3];
 function nota(i){ beep(NOTAS[i%NOTAS.length],.5,'sine',.22); }
 const SND={};
-['pajaro','lluvia','rio','viento','hojas','tambor'].forEach(k=>{ SND[k]=new Audio('assets/snd/'+k+'.mp3'); });
+['pajaro','lluvia','rio','viento','hojas','tambor','vaca','xilofono'].forEach(k=>{ SND[k]=new Audio('assets/snd/'+k+'.mp3'); });
 let sndAlt=false;
 function playSnd(k){
   const a=SND[k]; if(!a) return;
@@ -464,7 +470,21 @@ document.addEventListener('pointerdown',ev=>{
 },{passive:true});
 
 /* ================== FLUJO INICIAL ================== */
-$('#btnComenzar').onclick=()=>{ pop(); $('#overlayFam').classList.add('activa'); };
+let tituloLeido=false;
+function leerTitulo(){
+  if(tituloLeido || !$('#inicio').classList.contains('activa')) return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance('¡Descubriendo el mundo con mis sentidos! Una aventura para pequeños exploradores.');
+    u.lang='es-ES'; u.rate=.95; u.pitch=1.25; if(vozYami)u.voice=vozYami;
+    u.onstart=()=>{ tituloLeido=true; };
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+setTimeout(leerTitulo,900);
+document.addEventListener('pointerdown',()=>{ setTimeout(leerTitulo,80); });
+$('#btnComenzar').onclick=()=>{ tituloLeido=true; try{speechSynthesis.cancel();}catch(e){}
+  pop(); $('#overlayFam').classList.add('activa'); };
 $('#btnFamOk').onclick=()=>{
   $('#overlayFam').classList.remove('activa');
   ir('bienvenida');
@@ -576,12 +596,16 @@ const SPRITES_OIDO=[
    svg:'<svg viewBox="0 0 100 100"><ellipse cx="46" cy="55" rx="26" ry="20" fill="#5cc8ff" stroke="#2f9fd6" stroke-width="3"/><circle cx="68" cy="42" r="14" fill="#7dd3ff" stroke="#2f9fd6" stroke-width="3"/><path d="M80 40 L92 36 L82 46 Z" fill="#ffab5e"/><circle cx="72" cy="39" r="3.4" fill="#3a2a4d"/><path d="M30 50 Q16 46 20 60 Q28 62 34 58 Z" fill="#2f9fd6"/><path d="M40 74 L38 84 M52 74 L54 84" stroke="#f18f2f" stroke-width="3.6" stroke-linecap="round"/></svg>'},
   {id:'nube', x:58, y:9, w:17, snd:'lluvia',
    svg:'<svg viewBox="0 0 100 70"><ellipse cx="50" cy="42" rx="36" ry="18" fill="#fff"/><circle cx="30" cy="34" r="15" fill="#fff"/><circle cx="54" cy="26" r="18" fill="#fff"/><circle cx="74" cy="36" r="13" fill="#fff"/><g class="gotasN" opacity="0"><line x1="34" y1="58" x2="32" y2="66" stroke="#5cc8ff" stroke-width="4" stroke-linecap="round"/><line x1="52" y1="60" x2="50" y2="68" stroke="#5cc8ff" stroke-width="4" stroke-linecap="round"/><line x1="68" y1="58" x2="66" y2="66" stroke="#5cc8ff" stroke-width="4" stroke-linecap="round"/></g></svg>'},
-  {id:'rio', x:0, y:76, w:58, h:22, snd:'rio', invisible:true},
+  {id:'vaca', x:42, y:58, w:16, snd:'vaca',
+   svg:'<svg viewBox="0 0 100 100"><ellipse cx="52" cy="62" rx="30" ry="20" fill="#fff" stroke="#3a2a4d" stroke-width="3"/><path d="M36 52 Q30 46 36 44 Q46 46 46 54 Z" fill="#3a2a4d"/><ellipse cx="66" cy="70" rx="9" ry="7" fill="#3a2a4d"/><circle cx="26" cy="48" r="13" fill="#fff" stroke="#3a2a4d" stroke-width="3"/><path d="M15 40 Q10 34 16 32 M37 40 Q42 34 36 32" stroke="#3a2a4d" stroke-width="3.4" fill="none" stroke-linecap="round"/><ellipse cx="26" cy="56" rx="8" ry="5.4" fill="#ffb3d5" stroke="#d63d86" stroke-width="2"/><circle cx="23" cy="56" r="1.4" fill="#a2246a"/><circle cx="29" cy="56" r="1.4" fill="#a2246a"/><circle cx="22" cy="46" r="2.6" fill="#3a2a4d"/><circle cx="30" cy="46" r="2.6" fill="#3a2a4d"/><path d="M38 82 L38 90 M50 82 L50 90 M62 82 L62 90 M72 78 L74 86" stroke="#3a2a4d" stroke-width="3.6" stroke-linecap="round"/></svg>'},
+  {id:'xilofono', x:76, y:70, w:16, snd:'xilofono',
+   svg:'<svg viewBox="0 0 100 100"><g transform="rotate(-6 50 60)"><rect x="14" y="38" width="72" height="12" rx="5" fill="#ff5fa8"/><rect x="18" y="53" width="64" height="12" rx="5" fill="#ffd84d"/><rect x="22" y="68" width="56" height="12" rx="5" fill="#76d275"/><rect x="26" y="83" width="48" height="11" rx="5" fill="#5cc8ff"/><circle cx="14" cy="44" r="3" fill="#fff"/><circle cx="86" cy="44" r="3" fill="#fff"/><circle cx="18" cy="59" r="3" fill="#fff"/><circle cx="82" cy="59" r="3" fill="#fff"/></g><line x1="60" y1="10" x2="46" y2="34" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/><circle cx="62" cy="8" r="6" fill="#e0559a"/><line x1="82" y1="12" x2="70" y2="34" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/><circle cx="84" cy="10" r="6" fill="#7c5cff"/></svg>'},
+  {id:'rio', x:0, y:78, w:40, h:20, snd:'rio', invisible:true},
   {id:'hojas', x:4, y:6, w:24, h:40, snd:'hojas', invisible:true},
   {id:'tambor', x:66, y:54, w:14, snd:'tambor',
    svg:'<svg viewBox="0 0 100 100"><ellipse cx="50" cy="38" rx="32" ry="12" fill="#ffe9c2" stroke="#c98a00" stroke-width="3"/><path d="M18 38 L18 68 Q18 80 50 80 Q82 80 82 68 L82 38" fill="#e0559a" stroke="#a2246a" stroke-width="3"/><path d="M26 44 L40 72 M74 44 L60 72" stroke="#ffd84d" stroke-width="4"/><line x1="30" y1="18" x2="44" y2="34" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/><circle cx="28" cy="16" r="6" fill="#ffd84d"/><line x1="70" y1="18" x2="56" y2="34" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/><circle cx="72" cy="16" r="6" fill="#ffd84d"/></svg>'},
 ];
-const FRASES_OIDO={pajaro:'¡Un pajarito canta!', lluvia:'¡La nube suelta lluvia!', rio:'¡El río suena!', hojas:'¡Crujen las hojas!', tambor:'¡Pum, pum, el tambor!'};
+const FRASES_OIDO={pajaro:'¡Un pajarito canta!', lluvia:'¡La nube suelta lluvia!', rio:'¡El río suena!', hojas:'¡Crujen las hojas!', tambor:'¡Pum, pum, el tambor!', vaca:'¡Muuu! ¡Una vaquita!', xilofono:'¡Din, don! ¡El xilófono!'};
 function iniOido(){
   if(oidoInit) { decir('Toca el bosque y escucha.'); return; }
   oidoInit=true;
@@ -675,7 +699,11 @@ function iniOlfato(){
       const btn=cont.children[FRASCOS.indexOf(f)];
       btn.classList.remove('brinca'); void btn.offsetWidth; btn.classList.add('brinca');
       confeti(['✨','⭐']);
+      $('#frascoPopIn').innerHTML=frascoSVG(f)+
+        `<div style="text-align:center;color:#fff;font-weight:700;font-size:clamp(22px,5vw,32px);text-shadow:0 2px 8px #000">${f.nom.toUpperCase()}</div>`;
+      $('#frascoPop').style.display='flex';
       decir('¡El dado eligió '+f.nom+'! Busca ese frasco y huélelo.');
+      setTimeout(()=>{ $('#frascoPop').style.display='none'; },3000);
     },1100);
   };
   cont.appendChild(dado);
@@ -683,12 +711,22 @@ function iniOlfato(){
 }
 
 /* ================== TACTO ================== */
-let tactoInit=false, masaPts=[], masaAnim=null, masaHue=32, mGrab=-1, mDown=false, mMx=0, mMy=0;
+let tactoInit=false;
 function iniTacto(){
   decir('Pasa tu dedo por las texturas. ¿Cuál te gusta más?');
-  iniMasa();
+  $('#texAlgodon').style.backgroundImage="url('assets/img/tex-algodon.jpg')";
+  $('#texLija').style.backgroundImage="url('assets/img/tex-lija.jpg')";
+  $('#texPiedra').style.backgroundImage="url('assets/img/tex-piedra.jpg')";
+  $('#texMasa').style.backgroundImage="url('assets/img/tex-masa.jpg')";
   if(tactoInit) return;
   tactoInit=true;
+  $('#texMasa').addEventListener('pointerdown',ev=>{
+    const t=$('#texMasa');
+    t.classList.remove('squish'); void t.offsetWidth; t.classList.add('squish');
+    beep(150,.18,'sine',.2); setTimeout(()=>beep(110,.2,'sine',.15),150);
+    if(navigator.vibrate) navigator.vibrate(30);
+    decir('¡Blandita! Se aplasta y se estira.');
+  });
   let last=0;
   $('#texAlgodon').addEventListener('pointermove',ev=>{
     if(Date.now()-last<90) return; last=Date.now();
@@ -711,52 +749,6 @@ function iniTacto(){
     beep(120,.1,'square',.2); setTimeout(()=>beep(90,.12,'square',.15),120);
     decir('Dura como una piedra. Toc, toc.');
   });
-}
-function iniMasa(){
-  cancelAnimationFrame(masaAnim);
-  const cv=$('#masaCanvas'), ctx=cv.getContext('2d');
-  const r=cv.parentElement.getBoundingClientRect();
-  cv.width=r.width; cv.height=r.height;
-  const cx=cv.width/2, cy=cv.height/2, R=Math.min(cv.width,cv.height)*.3, N=14;
-  masaPts=Array.from({length:N},(_,i)=>{
-    const a=i/N*Math.PI*2;
-    return {bx:cx+Math.cos(a)*R, by:cy+Math.sin(a)*R, x:cx+Math.cos(a)*R, y:cy+Math.sin(a)*R, vx:0, vy:0};
-  });
-  (function loop(){
-    ctx.clearRect(0,0,cv.width,cv.height);
-    const N=masaPts.length;
-    masaPts.forEach((p,i)=>{
-      if(i===mGrab && mDown){ p.x+=(mMx-p.x)*.4; p.y+=(mMy-p.y)*.4; p.vx=p.vy=0;
-        const pr=masaPts[(i-1+N)%N], nx=masaPts[(i+1)%N];
-        pr.vx+=(p.x-pr.x)*.02; pr.vy+=(p.y-pr.y)*.02;
-        nx.vx+=(p.x-nx.x)*.02; nx.vy+=(p.y-nx.y)*.02;
-      } else { p.vx+=(p.bx-p.x)*.06; p.vy+=(p.by-p.y)*.06; p.vx*=.86; p.vy*=.86; p.x+=p.vx; p.y+=p.vy; }
-    });
-    ctx.beginPath();
-    const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
-    let m0=mid(masaPts[N-1],masaPts[0]); ctx.moveTo(m0.x,m0.y);
-    for(let i=0;i<N;i++){ const p=masaPts[i], m=mid(p,masaPts[(i+1)%N]); ctx.quadraticCurveTo(p.x,p.y,m.x,m.y); }
-    ctx.closePath();
-    const c={x:masaPts.reduce((s,p)=>s+p.x,0)/N, y:masaPts.reduce((s,p)=>s+p.y,0)/N};
-    const g=ctx.createRadialGradient(c.x-20,c.y-26,10,c.x,c.y,Math.min(cv.width,cv.height)*.42);
-    g.addColorStop(0,`hsl(${masaHue},68%,74%)`); g.addColorStop(1,`hsl(${masaHue},60%,52%)`);
-    ctx.fillStyle=g; ctx.fill();
-    ctx.strokeStyle=`hsla(${masaHue},55%,38%,.6)`; ctx.lineWidth=3; ctx.stroke();
-    masaAnim=requestAnimationFrame(loop);
-  })();
-  if(!cv.dataset.ev){
-    cv.dataset.ev='1';
-    cv.addEventListener('pointerdown',e=>{
-      const r=cv.getBoundingClientRect(); mDown=true; mMx=e.clientX-r.left; mMy=e.clientY-r.top;
-      let best=1e9; masaPts.forEach((p,i)=>{ const d=Math.hypot(p.x-mMx,p.y-mMy); if(d<best){best=d;mGrab=i;} });
-      beep(240,.15,'sine',.1);
-    });
-    cv.addEventListener('pointermove',e=>{ if(!mDown)return; const r=cv.getBoundingClientRect();
-      mMx=e.clientX-r.left; mMy=e.clientY-r.top; });
-    addEventListener('pointerup',()=>{ if(mDown && Math.random()<.4){ masaHue=(masaHue+60)%360; }
-      mDown=false; mGrab=-1; });
-    cv.parentElement.addEventListener('pointerdown',()=>decir('¡Estírala! Es blandita.'),{once:true});
-  }
 }
 
 /* ================== GUSTO ================== */
@@ -801,7 +793,7 @@ function iniGusto(){
     const iv=setInterval(()=>beep(300+Math.random()*200,.05,'sine',.06),200);
     setTimeout(()=>{
       clearInterval(iv);
-      const ang=((-ruletaGiro % 360)+360+270)%360;
+      const ang=(((-ruletaGiro)%360)+360)%360;
       const s=SABORES[Math.floor(ang/90)%4];
       $('#comidaSvg').innerHTML=s.cara;
       $('#comidaPop').classList.add('on');
