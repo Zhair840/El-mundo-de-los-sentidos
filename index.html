@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Descubriendo el mundo con mis sentidos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rosa:#ff8fc7; --rosa2:#ff5fa8; --morado:#9b7bff; --morado2:#7c5cff;
+    --amarillo:#ffd84d; --verde:#76d275; --azul:#5cc8ff; --naranja:#ffab5e;
+    --texto:#3a2a4d; --sombra:0 10px 28px rgba(124,92,255,.35);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0}
+  html,body{height:100%; overflow:hidden}
+  body{font-family:'Fredoka','Comic Sans MS','Chalkboard SE','Segoe UI Rounded',system-ui,sans-serif;
+    color:var(--texto); background:#1b1740; user-select:none; touch-action:manipulation}
+  .screen{position:fixed; inset:0; display:none; flex-direction:column;
+    align-items:center; justify-content:center; padding:18px; overflow:hidden}
+  .screen.activa{display:flex; animation:fade .5s ease}
+  @keyframes fade{from{opacity:0; transform:scale(.985)} to{opacity:1; transform:none}}
+  .fondoImg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0}
+  #inicio .titulo, #inicio .sub, #inicio .btn{position:relative; z-index:2}
+  #despedida .globo, #despedida .btn{position:relative; z-index:2}
+  #tacto .tituloSec, #tacto .gridTex, #gusto>*, #familia>*{position:relative; z-index:1}
+
+  /* ---------- BOTONES ---------- */
+  .btn{font-family:inherit; font-weight:700; border:none; cursor:pointer; color:#fff;
+    border-radius:60px; padding:20px 42px; font-size:clamp(20px,4.5vw,30px);
+    background:linear-gradient(135deg,var(--rosa),var(--rosa2)); box-shadow:var(--sombra);
+    transition:transform .15s; letter-spacing:.5px}
+  .btn:active{transform:scale(.93)}
+  .btn.grande{padding:24px 64px; font-size:clamp(26px,6vw,40px); animation:lat 1.6s ease-in-out infinite}
+  .btn.verde{background:linear-gradient(135deg,#8fe38d,var(--verde))}
+  .btn.morado{background:linear-gradient(135deg,var(--morado),var(--morado2))}
+  .btn.chico{padding:12px 26px; font-size:19px}
+  @keyframes lat{0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-10px) scale(1.04)}}
+  @keyframes flota{0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-16px) rotate(2deg)}}
+  @keyframes twinkle{0%,100%{opacity:.25; transform:scale(.7)} 50%{opacity:1; transform:scale(1.2)}}
+  @keyframes brinca{0%,100%{transform:translateY(0) scale(1)} 40%{transform:translateY(-18px) scale(1.12)}}
+  @keyframes tiembla{0%,100%{transform:translateX(0) rotate(0)} 25%{transform:translateX(-4px) rotate(-4deg)} 75%{transform:translateX(4px) rotate(4deg)}}
+  .volver{position:fixed; bottom:16px; left:16px; z-index:30; width:60px; height:60px; border-radius:50%;
+    border:none; cursor:pointer; font-size:28px; background:#fff; box-shadow:var(--sombra)}
+  .tituloSec{font-size:clamp(22px,4.6vw,36px); color:#fff; text-align:center;
+    text-shadow:0 2px 0 rgba(124,92,255,.7),0 6px 16px rgba(0,0,0,.35); margin-bottom:8px}
+  .hint{background:rgba(255,255,255,.92); padding:9px 22px; border-radius:30px; font-size:19px; font-weight:600;
+    box-shadow:var(--sombra); animation:lat 1.5s ease-in-out infinite}
+
+  /* ---------- INICIO ---------- */
+  #inicio{padding:0}
+  #vidLoop{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0}
+  #inicio .velo{position:absolute; inset:0; z-index:1;
+    background:radial-gradient(circle at 50% 40%, rgba(10,8,30,0) 30%, rgba(10,8,30,.45))}
+  #inicio .titulo{color:#fff; text-align:center; z-index:2; font-size:clamp(30px,7vw,62px); line-height:1.08;
+    text-shadow:0 4px 0 #7c5cff,0 8px 24px rgba(0,0,0,.55)}
+  #inicio .sub{color:#ffe7f4; z-index:2; font-size:clamp(16px,3.4vw,24px); margin:8px 0 26px;
+    text-shadow:0 2px 8px rgba(0,0,0,.6); text-align:center}
+  #btnComenzar{z-index:2}
+
+  /* ---------- VIDEO BIENVENIDA ---------- */
+  #bienvenida{padding:0; background:#000}
+  #vidBienv{width:100%; height:100%; object-fit:contain; background:#000}
+
+  /* ---------- MODALES ---------- */
+  .overlay{position:fixed; inset:0; background:rgba(30,20,55,.6); display:none;
+    align-items:center; justify-content:center; z-index:50; padding:18px}
+  .overlay.activa{display:flex; animation:fade .3s}
+  .modal{background:#fff; border-radius:30px; padding:26px 24px; max-width:540px; width:100%;
+    box-shadow:0 20px 50px rgba(0,0,0,.4); text-align:center; max-height:92vh; overflow:auto}
+  .badge{display:inline-block; background:#ffe9f4; color:#d63d86; font-weight:700;
+    padding:8px 18px; border-radius:30px; font-size:17px; margin-bottom:12px}
+  .badge.fam{background:#fff0d6; color:#c98a00}
+  .modal h2{font-size:25px; margin-bottom:10px}
+  .modal p{font-size:17.5px; line-height:1.5; color:#5a4a6b; margin-bottom:10px; text-align:left}
+  .mats{background:#fff6fb; border-radius:18px; padding:13px; margin:12px 0; text-align:left}
+  .mats b{color:#ff5fa8}
+  .mats ul{margin:6px 0 0 20px; font-size:16.5px; line-height:1.55}
+  .consejo{background:#eafbe9; border-radius:18px; padding:12px 14px; margin:0 0 14px;
+    font-size:15.5px; text-align:left; color:#3e6b2e}
+  .videoBox{width:100%; aspect-ratio:16/9; background:#0b0b18; border-radius:18px; overflow:hidden;
+    display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; margin:0 0 12px}
+  .videoBox iframe{width:100%; height:100%; border:0}
+
+  /* ---------- ÁRBOL ---------- */
+  #arbol{background:linear-gradient(180deg,#cfe6ff,#eafbe9)}
+  .fruto{position:absolute; width:clamp(72px,11vw,110px); height:clamp(72px,11vw,110px); border:none;
+    border-radius:50%; cursor:pointer; font-size:clamp(34px,5.5vw,52px); color:#fff;
+    box-shadow:0 8px 18px rgba(0,0,0,.3), inset 0 -4px 8px rgba(0,0,0,.15), 0 0 0 6px rgba(255,255,255,.35);
+    animation:flota 3.6s ease-in-out infinite, glowFruto 2.4s ease-in-out infinite;
+    transition:transform .15s; z-index:2;
+    display:flex; align-items:center; justify-content:center}
+  @keyframes glowFruto{0%,100%{box-shadow:0 8px 18px rgba(0,0,0,.3), inset 0 -4px 8px rgba(0,0,0,.15), 0 0 0 5px rgba(255,255,255,.3)}
+    50%{box-shadow:0 8px 18px rgba(0,0,0,.3), inset 0 -4px 8px rgba(0,0,0,.15), 0 0 26px 10px rgba(255,255,255,.65)}}
+  .fruto:active{transform:scale(.88)}
+  .fruto small{position:absolute; bottom:-24px; left:50%; transform:translateX(-50%);
+    font-size:13px; font-weight:700; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.6); letter-spacing:.5px}
+  .hotspot{position:absolute; border:none; background:rgba(255,255,255,0); cursor:pointer;
+    border-radius:24px; z-index:2}
+  .hotspot .tag{position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+    background:rgba(255,255,255,.9); border-radius:20px; padding:4px 12px; font-size:14px; font-weight:700;
+    color:var(--texto); box-shadow:0 4px 10px rgba(0,0,0,.25); white-space:nowrap; animation:lat 2s infinite}
+  .maripo{position:absolute; z-index:2; animation:maripoAnim 4s ease-in-out infinite; pointer-events:none}
+  @keyframes maripoAnim{0%,100%{transform:translate(0,0) rotate(-6deg)} 50%{transform:translate(18px,-16px) rotate(8deg)}}
+  #yamiArbol{position:absolute; height:clamp(120px,22vh,200px); z-index:2; cursor:pointer;
+    left:4%; bottom:2%; filter:drop-shadow(0 8px 12px rgba(0,0,0,.35)); animation:flota 4s ease-in-out infinite}
+
+  /* ---------- ESCENAS SENSORIALES ---------- */
+  .sprite{position:absolute; border:none; background:transparent; cursor:pointer; z-index:3;
+    transition:transform .15s; filter:drop-shadow(0 5px 8px rgba(0,0,0,.25))}
+  .sprite:active{transform:scale(.9)}
+  .sprite svg{width:100%; height:100%; display:block; overflow:visible}
+  .sprite.brinca{animation:brinca .7s ease}
+  /* vista */
+  #tinte{position:absolute; inset:0; z-index:2; pointer-events:none; mix-blend-mode:multiply;
+    opacity:0; transition:opacity .6s}
+  .lente{position:absolute; bottom:3%; width:clamp(64px,11vw,100px); height:clamp(64px,11vw,100px);
+    border-radius:50%; border:6px solid #fff; cursor:pointer; z-index:4;
+    box-shadow:0 8px 18px rgba(0,0,0,.35), inset 0 0 24px rgba(255,255,255,.5); transition:transform .2s}
+  .lente:active{transform:scale(.9)}
+  .lente.on{transform:scale(1.15); border-color:#ffd84d}
+  #oscuro{position:absolute; inset:0; z-index:5; pointer-events:none; opacity:0; transition:opacity .4s}
+  .silueta{position:absolute; z-index:6; opacity:0; transition:opacity .25s; pointer-events:none;
+    filter:drop-shadow(0 0 6px rgba(255,255,220,.4))}
+  /* olfato */
+  .olita{position:absolute; font-size:22px; opacity:0; animation:subeAroma 1.6s ease-out forwards; pointer-events:none; z-index:4}
+  @keyframes subeAroma{0%{opacity:0; transform:translateY(0) scale(.6)} 25%{opacity:.9}
+    100%{opacity:0; transform:translateY(-90px) scale(1.2)}}
+  /* tacto */
+  .gridTex{display:grid; grid-template-columns:1fr 1fr; gap:12px; width:min(94vw,700px); height:min(66vh,520px)}
+  .tex{position:relative; border-radius:24px; overflow:hidden; box-shadow:0 10px 24px rgba(0,0,0,.35);
+    touch-action:none; background-size:cover; background-position:center}
+  .tex .etq{position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,.92);
+    padding:4px 16px; border-radius:20px; font-weight:700; font-size:16px}
+  .pelusa{position:absolute; border-radius:50%; background:rgba(255,255,255,.95); pointer-events:none;
+    animation:pelusaAnim 1s ease-out forwards}
+  @keyframes pelusaAnim{0%{opacity:.95; transform:scale(.5)} 100%{opacity:0; transform:translateY(-34px) scale(1.3)}}
+  /* gusto */
+  #ruletaWrap{position:relative; width:min(56vw,300px); aspect-ratio:1}
+  #ruletaSvg{width:100%; height:100%; transition:transform 3.2s cubic-bezier(.15,.75,.25,1)}
+  #flechaR{position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:34px; z-index:2;
+    filter:drop-shadow(0 3px 4px rgba(0,0,0,.3))}
+  #comidaPop{position:fixed; inset:0; z-index:40; display:none; align-items:center; justify-content:center;
+    background:rgba(30,20,55,.45)}
+  #comidaPop.on{display:flex; animation:fade .3s}
+  #comidaPop svg{width:min(64vw,300px); animation:brinca 1s ease infinite}
+  .vasosRow{display:flex; gap:14px; justify-content:center; margin-top:14px; flex-wrap:wrap}
+  .vaso{width:clamp(58px,9vw,84px); border:none; background:transparent; cursor:pointer; transition:transform .15s}
+  .vaso:active{transform:scale(.88)}
+  .vaso.wob{animation:tiembla .5s ease 2}
+  /* familia */
+  #familia{background:linear-gradient(180deg,#fff3d6,#ffe3ef)}
+  .gridFam{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:13px;
+    width:100%; max-width:740px}
+  .famCard{background:#fff; border-radius:22px; padding:16px 10px; text-align:center; cursor:pointer;
+    box-shadow:0 6px 16px rgba(0,0,0,.14); transition:transform .15s; font-weight:600; font-size:16px}
+  .famCard:active{transform:scale(.95)}
+  .famCard .emo{font-size:40px; display:block; margin-bottom:4px}
+  /* calma */
+  #lienzoBurbujas{position:absolute; inset:0; z-index:2}
+  #cieloEstrellas{position:absolute; inset:0; z-index:1}
+  .estrellaC{position:absolute; color:#fffbe0; text-shadow:0 0 12px #fff8c4; animation:twinkle 2.2s infinite; pointer-events:none}
+  .asmrBar{position:fixed; z-index:6; bottom:16px; left:50%; transform:translateX(-50%);
+    display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+  .asmrBtn{width:58px; height:58px; border-radius:50%; border:none; cursor:pointer; font-size:26px;
+    background:rgba(255,255,255,.9); box-shadow:var(--sombra); transition:transform .15s}
+  .asmrBtn:active{transform:scale(.9)}
+  .asmrBtn.on{background:linear-gradient(135deg,#ffe27a,#f7b32b); box-shadow:0 0 22px rgba(255,216,77,.8)}
+  #ositoWrap{position:absolute; left:6%; bottom:14%; z-index:5; text-align:center; pointer-events:none}
+  #ositoSvg{width:clamp(110px,18vw,170px); animation:respira 8s ease-in-out infinite;
+    filter:drop-shadow(0 0 26px rgba(255,220,160,.55))}
+  @keyframes respira{0%,100%{transform:scale(1)} 45%,55%{transform:scale(1.14)}}
+  #ositoTxt{color:#ffe7f4; font-size:15px; font-weight:600; text-shadow:0 2px 6px rgba(0,0,0,.5); margin-top:4px}
+
+  /* ---------- DESPEDIDA ---------- */
+  #despedida .globo{background:rgba(255,255,255,.94); border-radius:26px; padding:20px 24px; max-width:560px;
+    font-size:clamp(17px,3.6vw,22px); font-weight:500; box-shadow:var(--sombra); text-align:center}
+
+  /* ---------- BARRA / EXTRAS ---------- */
+  .topbar{position:fixed; top:0; left:0; right:0; z-index:40; display:flex; justify-content:space-between;
+    padding:12px 16px; pointer-events:none}
+  .topbar .grupoIcon{display:flex; gap:10px}
+  .iconbtn{pointer-events:auto; width:52px; height:52px; border-radius:50%; border:none; cursor:pointer;
+    font-size:23px; background:#fff; box-shadow:var(--sombra); display:flex; align-items:center; justify-content:center}
+  #confeti{position:fixed; inset:0; pointer-events:none; z-index:60; overflow:hidden}
+  .confe{position:absolute; top:-40px; font-size:26px; animation:caeConfe linear forwards}
+  @keyframes caeConfe{to{transform:translateY(110vh) rotate(720deg)}}
+  .chispa{position:absolute; pointer-events:none; transform:translate(-50%,-50%); animation:chispaAnim .65s ease-out forwards}
+  @keyframes chispaAnim{0%{opacity:1; transform:translate(-50%,-50%) scale(.4)}
+    100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.15)}}
+</style>
+</head>
+<body>
+
+<!-- BARRA -->
+<div class="topbar" id="topbar" style="display:none">
+  <button class="iconbtn" id="btnArbol" title="Árbol">🌳</button>
+  <div class="grupoIcon">
+    <button class="iconbtn" id="btnFull" title="Pantalla completa">⛶</button>
+    <button class="iconbtn" id="btnMusica" title="Música">🔊</button>
+  </div>
+</div>
+
+<!-- ====== INICIO ====== -->
+<section id="inicio" class="screen activa">
+  <video id="vidLoop" src="assets/video/inicio-loop.mp4" autoplay muted loop playsinline></video>
+  <div class="velo"></div>
+  <h1 class="titulo">Descubriendo el mundo<br>con mis sentidos</h1>
+  <p class="sub">🌈 Una aventura para pequeños exploradores</p>
+  <button class="btn grande" id="btnComenzar">▶ COMENZAR</button>
+</section>
+
+<!-- ====== VIDEO BIENVENIDA ====== -->
+<section id="bienvenida" class="screen">
+  <video id="vidBienv" src="assets/video/bienvenida.mp4" playsinline preload="auto"></video>
+  <button class="btn verde chico" id="btnSaltar" style="position:fixed; bottom:22px; right:22px; z-index:10">Continuar ▶</button>
+</section>
+
+<!-- ====== ÁRBOL MÁGICO ====== -->
+<section id="arbol" class="screen">
+  <img class="fondoImg" id="imgArbol" src="assets/img/arbol.jpg" alt="" onerror="this.style.display='none'">
+  <button class="fruto" data-rama="olfato" style="left:22%; top:10%; background:radial-gradient(circle at 35% 30%,#b2e8a2,#4caf50)">👃<small>OLFATO</small></button>
+  <button class="fruto" data-rama="gusto"  style="left:45%; top:6%; background:radial-gradient(circle at 35% 30%,#ffb3d5,#e0559a)">👅<small>GUSTO</small></button>
+  <button class="fruto" data-rama="oido"   style="left:67%; top:10%; background:radial-gradient(circle at 35% 30%,#9adcff,#2f9fd6)">👂<small>OÍDO</small></button>
+  <button class="fruto" data-rama="vista"  style="left:8%; top:40%; background:radial-gradient(circle at 35% 30%,#ffe98a,#f0b429)">👁<small>VISTA</small></button>
+  <button class="fruto" data-rama="tacto"  style="left:83%; top:40%; background:radial-gradient(circle at 35% 30%,#ffcf9e,#f18f2f)">✋<small>TACTO</small></button>
+  <button class="hotspot" id="lunaBtn" style="left:2%; top:2%; width:15%; height:30%">
+    <span class="tag">🌙 Calma</span></button>
+  <span class="maripo" style="left:8%; top:64%; font-size:26px">🦋</span>
+  <span class="maripo" style="left:70%; top:74%; font-size:22px; animation-delay:1.3s">🦋</span>
+  <span class="maripo" style="left:30%; top:80%; font-size:20px; animation-delay:2s">🐝</span>
+  <button class="hotspot" id="casitaBtn" style="left:69%; top:56%; width:26%; height:38%">
+    <span class="tag">👨‍👩‍👧 Familia</span></button>
+  <img id="yamiArbol" src="assets/img/yami-base.png" alt="Yami">
+</section>
+
+<!-- ====== VISTA ====== -->
+<section id="vista" class="screen" style="padding:0">
+  <img class="fondoImg" src="assets/img/dia.jpg" alt="">
+  <div id="tinte"></div>
+  <div id="oscuro"></div>
+  <div id="siluetas"></div>
+  <div class="hint" id="hintVista" style="position:fixed; top:76px; z-index:8; left:50%; transform:translateX(-50%)">👆 Toca un color mágico</div>
+  <div class="lente" data-col="255,216,77"  style="left:calc(50% - 130px); background:rgba(255,216,77,.55)"></div>
+  <div class="lente" data-col="92,150,255"  style="left:calc(50% - 40px);  background:rgba(92,150,255,.55)"></div>
+  <div class="lente" data-col="255,95,120"  style="left:calc(50% + 50px);  background:rgba(255,95,120,.55)"></div>
+</section>
+
+<!-- ====== OÍDO ====== -->
+<section id="oido" class="screen" style="padding:0">
+  <img class="fondoImg" src="assets/img/bosque.jpg" alt="" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(180deg,#bfe8ff,#d7f5c9)'">
+  <div class="hint" style="position:fixed; top:76px; z-index:8; left:50%; transform:translateX(-50%)">👆 Toca y escucha</div>
+  <div id="spritesOido" style="position:absolute; inset:0; z-index:2"></div>
+</section>
+
+<!-- ====== OLFATO ====== -->
+<section id="olfato" class="screen" style="padding:0">
+  <img class="fondoImg" src="assets/img/jardin.jpg" alt="" onerror="this.style.display='none';this.parentElement.style.background='linear-gradient(180deg,#d7f5c9,#ffe9f4)'">
+  <div class="hint" style="position:fixed; top:76px; z-index:8; left:50%; transform:translateX(-50%)">👆 Toca un frasco y huélelo de verdad</div>
+  <div id="frascosWrap" style="position:absolute; inset:0; z-index:2"></div>
+</section>
+
+<!-- ====== TACTO ====== -->
+<section id="tacto" class="screen" style="background:linear-gradient(180deg,#ffe9c2,#ffd3e6)">
+  <h2 class="tituloSec">✋ Toco y descubro</h2>
+  <div class="gridTex">
+    <div class="tex" id="texAlgodon" style="background-image:url('assets/img/tex-algodon.jpg')"><span class="etq">suave</span></div>
+    <div class="tex" id="texLija" style="background-image:url('assets/img/tex-lija.jpg')"><span class="etq">áspera</span></div>
+    <div class="tex" id="texPiedra" style="background-image:url('assets/img/tex-piedra.jpg')"><span class="etq">dura</span></div>
+    <div class="tex" id="texMasa" style="background:#f3e0c8"><canvas id="masaCanvas" style="width:100%;height:100%"></canvas><span class="etq">moldeable</span></div>
+  </div>
+</section>
+
+<!-- ====== GUSTO ====== -->
+<section id="gusto" class="screen" style="background:linear-gradient(180deg,#ffd9ec,#fff3d6)">
+  <h2 class="tituloSec" style="color:#d63d86; text-shadow:0 2px 0 #fff">👅 Pruebo y descubro</h2>
+  <div id="ruletaWrap">
+    <span id="flechaR">🔻</span>
+    <svg id="ruletaSvg" viewBox="-105 -105 210 210"></svg>
+  </div>
+  <div class="hint" id="hintGusto" style="margin-top:10px">👆 Toca la ruleta</div>
+  <div class="vasosRow" id="vasosRow"></div>
+  <div id="comidaPop"><svg id="comidaSvg" viewBox="0 0 200 220"></svg></div>
+</section>
+
+<!-- ====== FAMILIA ====== -->
+<section id="familia" class="screen">
+  <h2 class="tituloSec" style="color:#c98a00; text-shadow:0 2px 0 #fff">🏡 Exploramos en familia</h2>
+  <p style="color:#8a6a3a; margin-bottom:10px; font-size:16px">Ideas para preparar ambientes de exploración en casa</p>
+  <div class="gridFam" id="gridFam"></div>
+</section>
+
+<!-- ====== CALMA ====== -->
+<section id="calma" class="screen" style="padding:0; background:#1b1740">
+  <img class="fondoImg" src="assets/img/fondo-calma.jpg" alt="" style="opacity:.85">
+  <div id="cieloEstrellas"></div>
+  <canvas id="lienzoBurbujas"></canvas>
+  <div id="ositoWrap">
+    <svg id="ositoSvg" viewBox="0 0 200 210"></svg>
+    <div id="ositoTxt">respira con el osito 🌬</div>
+  </div>
+  <div class="asmrBar">
+    <button class="asmrBtn" data-asmr="lluvia" title="Lluvia">🌧</button>
+    <button class="asmrBtn" data-asmr="viento" title="Viento">💨</button>
+    <button class="asmrBtn" data-asmr="agua" title="Agua">💧</button>
+    <button class="asmrBtn" data-asmr="hojas" title="Hojas">🍃</button>
+    <button class="asmrBtn" id="btnMusCalma" title="Música">🎵</button>
+  </div>
+</section>
+
+<!-- ====== DESPEDIDA ====== -->
+<section id="despedida" class="screen">
+  <img class="fondoImg" src="assets/img/yami-despedida.jpg" alt="">
+  <div class="globo">🌸 Hoy descubriste el mundo usando tus sentidos.<br>
+    Cada experiencia te ayudó a observar, escuchar, oler, tocar y saborear nuevas posibilidades.<br>
+    <b>¡Gracias por explorar conmigo! Te esperaré para vivir una nueva aventura.</b> 💛</div>
+  <button class="btn morado" id="btnVolverArbol" style="margin-top:18px">🌳 Volver al árbol</button>
+</section>
+
+<button class="volver" id="btnVolver" style="display:none">◀</button>
+
+<!-- ====== MENSAJE FAMILIA ====== -->
+<div class="overlay" id="overlayFam">
+  <div class="modal">
+    <span class="badge fam">💙 Mensaje para la familia</span>
+    <h2>Acompañando el descubrimiento</h2>
+    <p>Este recurso invita a los niños a explorar libremente utilizando sus sentidos.
+       El papel del adulto es preparar un ambiente seguro, observar con atención, acompañar
+       con afecto y respetar el ritmo e interés del niño.</p>
+    <p>No es necesario dirigir cada acción ni buscar respuestas correctas; cada experiencia
+       será valiosa porque nace de la curiosidad y la exploración del niño.</p>
+    <button class="btn verde" id="btnFamOk">Entendido, comenzamos ▶</button>
+  </div>
+</div>
+
+<!-- ====== MODAL AMBIENTE (por sentido) ====== -->
+<div class="overlay" id="overlayAmb">
+  <div class="modal">
+    <span class="badge fam">👩‍👦 Prepara el ambiente</span>
+    <h2 id="ambTitulo"></h2>
+    <p id="ambTexto"></p>
+    <div class="mats"><b>🧺 Materiales sugeridos:</b><ul id="ambMats"></ul></div>
+    <button class="btn verde" id="btnAmbOk">¡A explorar! ▶</button>
+  </div>
+</div>
+
+<!-- ====== MODAL FAMILIA (propuesta) ====== -->
+<div class="overlay" id="overlayProp">
+  <div class="modal">
+    <span class="badge fam">🏡 Ambiente de exploración</span>
+    <h2 id="propTitulo"></h2>
+    <p id="propTexto"></p>
+    <div class="mats"><b>🧺 Materiales:</b><ul id="propMats"></ul></div>
+    <div id="propVideo"></div>
+    <div class="consejo" id="propConsejo"></div>
+    <button class="btn morado" id="btnPropOk">Listo ✔</button>
+  </div>
+</div>
+
+<div id="confeti"></div>
+<audio id="musica" src="assets/audio/musica.mp3" loop></audio>
+<audio id="musCalma" src="assets/audio/musica-calma.mp3" loop></audio>
+<audio id="asmrAudio" loop></audio>
+
+<script>
+/* ================== MOTOR ================== */
+const $=s=>document.querySelector(s);
+const screens=document.querySelectorAll('.screen');
+const RAMAS=['vista','oido','olfato','tacto','gusto'];
+function ir(id){
+  screens.forEach(s=>s.classList.remove('activa'));
+  $('#'+id).classList.add('activa');
+  $('#topbar').style.display=(id==='inicio'||id==='bienvenida')?'none':'flex';
+  $('#btnVolver').style.display=(RAMAS.includes(id)||['familia','calma'].includes(id))?'block':'none';
+  if(id!=='bienvenida'){ const v=$('#vidBienv'); if(v) v.pause(); }
+  if(id!=='calma') pararCalma();
+  if(id==='vista') iniVista();
+  if(id==='oido') iniOido();
+  if(id==='olfato') iniOlfato();
+  if(id==='tacto') iniTacto();
+  if(id==='gusto') iniGusto();
+  if(id==='calma') iniCalma();
+}
+$('#btnVolver').onclick=()=>{ pop(); ir('arbol'); };
+$('#btnArbol').onclick=()=>ir('arbol');
+$('#btnVolverArbol').onclick=()=>ir('arbol');
+$('#btnFull').onclick=()=>{
+  if(document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(()=>{});
+};
+
+/* ================== VOZ ================== */
+let vozYami=null;
+function cargarVoz(){
+  const vs=speechSynthesis.getVoices().filter(v=>v.lang && v.lang.toLowerCase().startsWith('es'));
+  vozYami=vs.find(v=>/paulina|mónica|monica|sabina|helena|luciana|female|mujer/i.test(v.name))
+        ||vs.find(v=>/mx|419|us/i.test(v.lang))||vs[0]||null;
+}
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=cargarVoz; cargarVoz(); }
+function decir(txt){
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang='es-ES'; u.rate=.95; u.pitch=1.25; if(vozYami)u.voice=vozYami;
+    if(musOn) musica.volume=.03;
+    u.onend=u.onerror=()=>{ if(musOn) musica.volume=VOL; };
+    speechSynthesis.speak(u);
+    setTimeout(()=>{ if(musOn && !speechSynthesis.speaking) musica.volume=VOL; },6000);
+  }catch(e){}
+}
+
+/* ================== SONIDOS ================== */
+let actx=null;
+function beep(freq=600,dur=.12,tipo='sine',vol=.25){
+  try{ actx=actx||new(window.AudioContext||window.webkitAudioContext)();
+    const o=actx.createOscillator(),g=actx.createGain();
+    o.type=tipo; o.frequency.value=freq; o.connect(g); g.connect(actx.destination);
+    g.gain.setValueAtTime(vol,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+dur);
+    o.start(); o.stop(actx.currentTime+dur);
+  }catch(e){}
+}
+function pop(){ beep(380+Math.random()*500,.18,'sine',.3); }
+const NOTAS=[261.6,293.7,329.6,392,440,523.3];
+function nota(i){ beep(NOTAS[i%NOTAS.length],.5,'sine',.22); }
+const SND={};
+['pajaro','lluvia','rio','viento','hojas','tambor'].forEach(k=>{ SND[k]=new Audio('assets/snd/'+k+'.mp3'); });
+let sndAlt=false;
+function playSnd(k){
+  const a=SND[k]; if(!a) return;
+  try{ a.currentTime=0; sndAlt=!sndAlt; a.playbackRate=sndAlt?1:1.18; a.volume=.85; a.play().catch(()=>{}); }catch(e){}
+}
+
+/* ================== MÚSICA ================== */
+const musica=$('#musica'); let musOn=false; const VOL=.08;
+function musToggle(){ musOn=!musOn; if(musOn){musica.volume=VOL; musica.play().catch(()=>{});} else musica.pause();
+  $('#btnMusica').textContent=musOn?'🔊':'🔇'; }
+$('#btnMusica').onclick=musToggle;
+
+/* ================== CONFETI + CHISPAS ================== */
+function confeti(EMO){
+  const cont=$('#confeti'); EMO=EMO||['🎉','⭐','✨','💛','🌈'];
+  for(let i=0;i<30;i++){
+    const s=document.createElement('span'); s.className='confe';
+    s.textContent=EMO[Math.floor(Math.random()*EMO.length)];
+    s.style.left=Math.random()*100+'%';
+    s.style.animationDuration=(1.8+Math.random()*1.6)+'s';
+    s.style.animationDelay=(Math.random()*.5)+'s';
+    cont.appendChild(s); setTimeout(()=>s.remove(),4200);
+  }
+}
+document.addEventListener('pointerdown',ev=>{
+  const cont=$('#confeti'), EMO=['✨','⭐','✦'];
+  for(let i=0;i<5;i++){
+    const s=document.createElement('span'); s.className='chispa';
+    s.textContent=EMO[Math.floor(Math.random()*EMO.length)];
+    const a=Math.random()*Math.PI*2, d=24+Math.random()*36;
+    s.style.left=ev.clientX+'px'; s.style.top=ev.clientY+'px';
+    s.style.fontSize=(10+Math.random()*12)+'px';
+    s.style.setProperty('--dx', Math.cos(a)*d+'px');
+    s.style.setProperty('--dy', Math.sin(a)*d+'px');
+    cont.appendChild(s); setTimeout(()=>s.remove(),700);
+  }
+},{passive:true});
+
+/* ================== FLUJO INICIAL ================== */
+$('#btnComenzar').onclick=()=>{ pop(); $('#overlayFam').classList.add('activa'); };
+$('#btnFamOk').onclick=()=>{
+  $('#overlayFam').classList.remove('activa');
+  ir('bienvenida');
+  const v=$('#vidBienv'); v.currentTime=0; v.muted=false; v.volume=1;
+  v.play().catch(()=>{}); v.onended=finBienv;
+};
+function finBienv(){
+  $('#vidBienv').pause();
+  if(!musOn) musToggle();
+  ir('arbol');
+  decir('¡Mira el árbol mágico! Toca lo que más te llame la atención.');
+}
+$('#btnSaltar').onclick=finBienv;
+
+/* ================== ÁRBOL ================== */
+const AMBIENTES={
+  vista:{t:'👀 Observo y descubro', txt:'Tu pequeño mirará el mundo a través de colores y descubrirá sombras con la linterna. Luego pueden repetirlo con materiales reales.',
+    mats:['Celofán de colores','Marcos de cartón','Linterna','Lupa infantil','Botellas sensoriales']},
+  oido:{t:'👂 Escucho y descubro', txt:'Tu pequeño tocará el bosque y cada cosa sonará. Acompáñalo nombrando lo que escucha y luego exploren sonidos reales.',
+    mats:['Maracas o botellas con arroz','Tambor o cajas','Tarjetas de animales']},
+  olfato:{t:'👃 Huelo y descubro', txt:'La pantalla invita: tu pequeño toca un frasco y luego lo busca DE VERDAD. Prepara frascos con aromas antes de jugar.',
+    mats:['Frascos con limón, naranja, café, canela, lavanda y hierbabuena','Dado de aromas (opcional)']},
+  tacto:{t:'✋ Toco y descubro', txt:'Tu pequeño sentirá texturas en pantalla y luego en la mesa real. Prepara materiales suaves, ásperos, duros y moldeables.',
+    mats:['Algodón y peluche','Lija fina y corteza','Piedras lisas y madera','Masa casera o plastilina']},
+  gusto:{t:'👅 Pruebo y descubro', txt:'La ruleta elige un sabor y tu pequeño lo prueba DE VERDAD con alimentos seguros. El cacao amargo en muy poquita cantidad.',
+    mats:['Dulce: plátano, yogur, manzana','Ácido: limón, naranja','Salado: galleta, queso','Amargo: cacao puro (poquito)','Bebidas: agua, leche, jugo, yogur']},
+};
+let ramaPend=null;
+document.querySelectorAll('.fruto').forEach(f=>{
+  f.onclick=()=>{
+    pop(); nota(Math.floor(Math.random()*6));
+    ramaPend=f.dataset.rama;
+    const a=AMBIENTES[ramaPend];
+    $('#ambTitulo').textContent=a.t;
+    $('#ambTexto').textContent=a.txt;
+    $('#ambMats').innerHTML=a.mats.map(m=>`<li>${m}</li>`).join('');
+    $('#overlayAmb').classList.add('activa');
+  };
+});
+$('#btnAmbOk').onclick=()=>{
+  $('#overlayAmb').classList.remove('activa');
+  if(ramaPend) ir(ramaPend);
+};
+$('#lunaBtn').onclick=()=>{ pop(); ir('calma'); decir('Hora de descansar. Escucha los sonidos suaves.'); };
+$('#casitaBtn').onclick=()=>{ pop(); ir('familia'); };
+$('#yamiArbol').onclick=()=>{ confeti(['🌸','🌼','💮','🌺','✨']); ir('despedida');
+  decir('Hoy descubriste el mundo usando tus sentidos. ¡Gracias por explorar conmigo!'); };
+
+/* ================== VISTA ================== */
+let lenteOn=null, oscuroOn=false, vistaInit=false;
+const SILUETAS=[
+  {x:22,y:40,svg:'<svg viewBox="0 0 100 100" width="90"><path d="M35 88 Q20 86 20 70 Q20 55 32 50 Q26 42 30 30 Q33 20 40 28 Q42 18 50 18 Q58 18 60 28 Q67 20 70 30 Q74 42 68 50 Q80 55 80 70 Q80 86 65 88 Z" fill="#241d3d"/></svg>'},
+  {x:62,y:30,svg:'<svg viewBox="0 0 100 100" width="80"><path d="M50 80 Q28 80 24 62 Q20 44 38 40 L34 24 L48 34 Q50 32 52 34 L66 24 L62 40 Q80 44 76 62 Q72 80 50 80 Z" fill="#241d3d"/></svg>'},
+  {x:44,y:58,svg:'<svg viewBox="0 0 100 100" width="86"><ellipse cx="42" cy="60" rx="26" ry="18" fill="#241d3d"/><circle cx="68" cy="48" r="12" fill="#241d3d"/><path d="M76 40 L84 30 L80 44 Z" fill="#241d3d"/><path d="M16 66 Q6 70 10 78" stroke="#241d3d" stroke-width="6" fill="none" stroke-linecap="round"/></svg>'},
+];
+function iniVista(){
+  if(!vistaInit){
+    vistaInit=true;
+    const cont=$('#siluetas');
+    SILUETAS.forEach((s,i)=>{
+      const d=document.createElement('div'); d.className='silueta'; d.id='sil'+i;
+      d.style.left=s.x+'%'; d.style.top=s.y+'%'; d.innerHTML=s.svg;
+      cont.appendChild(d);
+    });
+    document.querySelectorAll('.lente').forEach(l=>{
+      l.addEventListener('pointerdown',ev=>{
+        ev.stopPropagation(); pop();
+        if(lenteOn===l){ l.classList.remove('on'); lenteOn=null; $('#tinte').style.opacity='0'; }
+        else{
+          document.querySelectorAll('.lente').forEach(x=>x.classList.remove('on'));
+          l.classList.add('on'); lenteOn=l;
+          $('#tinte').style.background=`rgba(${l.dataset.col},.55)`;
+          $('#tinte').style.opacity='1';
+          decir('¡Mira! Todo cambió de color.');
+        }
+      });
+    });
+    const esc=$('#vista'); let hold=null;
+    esc.addEventListener('pointerdown',ev=>{
+      if(ev.target.classList.contains('lente')) return;
+      hold=setTimeout(()=>{ oscuroOn=true; linterna(ev.clientX,ev.clientY);
+        decir('¡Shhh! Busca las sombras con tu linterna.'); },380);
+    });
+    esc.addEventListener('pointermove',ev=>{ if(oscuroOn) linterna(ev.clientX,ev.clientY); });
+    addEventListener('pointerup',()=>{ clearTimeout(hold);
+      if(oscuroOn){ oscuroOn=false; $('#oscuro').style.opacity='0';
+        document.querySelectorAll('.silueta').forEach(s=>s.style.opacity='0'); } });
+  }
+  lenteOn=null; $('#tinte').style.opacity='0';
+  document.querySelectorAll('.lente').forEach(x=>x.classList.remove('on'));
+  $('#oscuro').style.opacity='0';
+  decir('Toca un color mágico y mira el mundo. Si dejas tu dedo quieto, ¡aparece la linterna!');
+}
+function linterna(x,y){
+  const o=$('#oscuro');
+  o.style.background=`radial-gradient(circle 110px at ${x}px ${y}px, rgba(8,6,26,0) 0%, rgba(8,6,26,.35) 60%, rgba(8,6,26,.93) 100%)`;
+  o.style.opacity='1';
+  document.querySelectorAll('.silueta').forEach(s=>{
+    const r=s.getBoundingClientRect(), cx=r.left+r.width/2, cy=r.top+r.height/2;
+    s.style.opacity=(Math.hypot(x-cx,y-cy)<150)?'1':'0';
+  });
+  if(Math.random()<.05) beep(700+Math.random()*300,.15,'sine',.06);
+}
+
+/* ================== OÍDO ================== */
+let oidoInit=false;
+const SPRITES_OIDO=[
+  {id:'pajaro', x:27, y:22, w:13, snd:'pajaro',
+   svg:'<svg viewBox="0 0 100 100"><ellipse cx="46" cy="55" rx="26" ry="20" fill="#5cc8ff" stroke="#2f9fd6" stroke-width="3"/><circle cx="68" cy="42" r="14" fill="#7dd3ff" stroke="#2f9fd6" stroke-width="3"/><path d="M80 40 L92 36 L82 46 Z" fill="#ffab5e"/><circle cx="72" cy="39" r="3.4" fill="#3a2a4d"/><path d="M30 50 Q16 46 20 60 Q28 62 34 58 Z" fill="#2f9fd6"/><path d="M40 74 L38 84 M52 74 L54 84" stroke="#f18f2f" stroke-width="3.6" stroke-linecap="round"/></svg>'},
+  {id:'nube', x:58, y:9, w:17, snd:'lluvia',
+   svg:'<svg viewBox="0 0 100 70"><ellipse cx="50" cy="42" rx="36" ry="18" fill="#fff"/><circle cx="30" cy="34" r="15" fill="#fff"/><circle cx="54" cy="26" r="18" fill="#fff"/><circle cx="74" cy="36" r="13" fill="#fff"/><g class="gotasN" opacity="0"><line x1="34" y1="58" x2="32" y2="66" stroke="#5cc8ff" stroke-width="4" stroke-linecap="round"/><line x1="52" y1="60" x2="50" y2="68" stroke="#5cc8ff" stroke-width="4" stroke-linecap="round"/><line x1="68" y1="58" x2="66" y2="66" stroke="#5cc8ff" stroke-width="4" stroke-linecap="round"/></g></svg>'},
+  {id:'rio', x:0, y:76, w:58, h:22, snd:'rio', invisible:true},
+  {id:'hojas', x:4, y:6, w:24, h:40, snd:'hojas', invisible:true},
+  {id:'tambor', x:66, y:54, w:14, snd:'tambor',
+   svg:'<svg viewBox="0 0 100 100"><ellipse cx="50" cy="38" rx="32" ry="12" fill="#ffe9c2" stroke="#c98a00" stroke-width="3"/><path d="M18 38 L18 68 Q18 80 50 80 Q82 80 82 68 L82 38" fill="#e0559a" stroke="#a2246a" stroke-width="3"/><path d="M26 44 L40 72 M74 44 L60 72" stroke="#ffd84d" stroke-width="4"/><line x1="30" y1="18" x2="44" y2="34" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/><circle cx="28" cy="16" r="6" fill="#ffd84d"/><line x1="70" y1="18" x2="56" y2="34" stroke="#8a5a3b" stroke-width="4" stroke-linecap="round"/><circle cx="72" cy="16" r="6" fill="#ffd84d"/></svg>'},
+];
+const FRASES_OIDO={pajaro:'¡Un pajarito canta!', lluvia:'¡La nube suelta lluvia!', rio:'¡El río suena!', hojas:'¡Crujen las hojas!', tambor:'¡Pum, pum, el tambor!'};
+function iniOido(){
+  if(oidoInit) { decir('Toca el bosque y escucha.'); return; }
+  oidoInit=true;
+  const cont=$('#spritesOido');
+  SPRITES_OIDO.forEach(sp=>{
+    const b=document.createElement('button');
+    b.className='sprite';
+    b.style.left=sp.x+'%'; b.style.top=sp.y+'%'; b.style.width=sp.w+'%';
+    if(sp.h) b.style.height=sp.h+'%';
+    if(sp.svg){ b.innerHTML=sp.svg; b.style.animation='flota 3.5s ease-in-out infinite'; }
+    else { b.style.background='rgba(255,255,255,0)'; }
+    b.onclick=()=>{
+      playSnd(sp.snd); decir(FRASES_OIDO[sp.snd]);
+      b.classList.remove('brinca'); void b.offsetWidth; b.classList.add('brinca');
+      if(sp.id==='nube'){ const g=b.querySelector('.gotasN'); if(g){ g.setAttribute('opacity','1');
+        setTimeout(()=>g.setAttribute('opacity','0'),2200); } }
+      if(sp.id==='hojas'||sp.id==='rio'){
+        for(let i=0;i<6;i++){
+          const s=document.createElement('span'); s.className='olita';
+          s.textContent=sp.id==='hojas'?'🍃':'💧';
+          const r=b.getBoundingClientRect();
+          s.style.left=(r.left+Math.random()*r.width)+'px';
+          s.style.top=(r.top+r.height*.4)+'px';
+          s.style.position='fixed';
+          document.body.appendChild(s); setTimeout(()=>s.remove(),1600);
+        }
+      }
+    };
+    cont.appendChild(b);
+  });
+  decir('Toca el bosque y escucha. ¡Todo suena!');
+}
+/* ================== OLFATO ================== */
+let olfatoInit=false;
+const FRASCOS=[
+  {id:'limon', nom:'limón', col:'#ffe98a', borde:'#e0a92e', dib:'<circle cx="50" cy="62" r="14" fill="#ffd84d" stroke="#c98a00" stroke-width="2.6"/><ellipse cx="50" cy="62" rx="7" ry="10" fill="#fff3b0" opacity=".7"/>'},
+  {id:'naranja', nom:'naranja', col:'#ffcf9e', borde:'#f18f2f', dib:'<circle cx="50" cy="62" r="14" fill="#ffab5e" stroke="#d2691e" stroke-width="2.6"/><circle cx="50" cy="50" r="3" fill="#76d275"/>'},
+  {id:'cafe', nom:'café', col:'#d9b38c', borde:'#8a5a3b', dib:'<ellipse cx="44" cy="60" rx="7" ry="10" fill="#6b4226" transform="rotate(-16 44 60)"/><ellipse cx="58" cy="64" rx="7" ry="10" fill="#8a5a3b" transform="rotate(18 58 64)"/><path d="M44 54 L44 66 M58 58 L58 70" stroke="#4a2c16" stroke-width="1.8"/>'},
+  {id:'canela', nom:'canela', col:'#ecc9a3', borde:'#b4764a', dib:'<rect x="36" y="52" width="9" height="24" rx="4" fill="#b4764a" transform="rotate(-12 40 64)"/><rect x="52" y="52" width="9" height="24" rx="4" fill="#9c5f38" transform="rotate(10 56 64)"/>'},
+  {id:'lavanda', nom:'lavanda', col:'#d9c6ff', borde:'#7c5cff', dib:'<path d="M50 76 L50 54" stroke="#4caf50" stroke-width="3"/><ellipse cx="50" cy="52" rx="6" ry="10" fill="#9b7bff"/><ellipse cx="44" cy="60" rx="4.6" ry="7" fill="#b39dfc"/><ellipse cx="56" cy="60" rx="4.6" ry="7" fill="#b39dfc"/>'},
+  {id:'hierbabuena', nom:'hierbabuena', col:'#c9f2c0', borde:'#4caf50', dib:'<path d="M50 78 L50 56" stroke="#3e8e41" stroke-width="3"/><ellipse cx="42" cy="58" rx="9" ry="6" fill="#76d275" transform="rotate(-28 42 58)"/><ellipse cx="58" cy="58" rx="9" ry="6" fill="#5bb35a" transform="rotate(28 58 58)"/><ellipse cx="50" cy="48" rx="8" ry="6" fill="#8fe38d"/>'},
+];
+function frascoSVG(f){
+  return `<svg viewBox="0 0 100 110">
+    <rect x="38" y="14" width="24" height="10" rx="3" fill="${f.borde}"/>
+    <path d="M32 26 Q28 32 28 42 L28 88 Q28 98 38 98 L62 98 Q72 98 72 88 L72 42 Q72 32 68 26 Z"
+      fill="${f.col}" stroke="${f.borde}" stroke-width="3" opacity=".92"/>
+    ${f.dib}
+    <ellipse cx="42" cy="40" rx="5" ry="12" fill="#fff" opacity=".5"/>
+  </svg>`;
+}
+function iniOlfato(){
+  if(olfatoInit){ decir('Toca un frasco y luego huélelo de verdad.'); return; }
+  olfatoInit=true;
+  const cont=$('#frascosWrap');
+  FRASCOS.forEach((f,i)=>{
+    const b=document.createElement('button');
+    b.className='sprite'; b.innerHTML=frascoSVG(f);
+    b.style.left=(7+i*15)+'%'; b.style.top='44%'; b.style.width='12%';
+    b.style.animation='flota 3.8s '+(i*.3)+'s ease-in-out infinite';
+    b.onclick=()=>{
+      pop(); nota(i);
+      b.classList.remove('brinca'); void b.offsetWidth; b.classList.add('brinca');
+      const r=b.getBoundingClientRect();
+      for(let k=0;k<4;k++){
+        const s=document.createElement('span'); s.className='olita'; s.textContent='〰️';
+        s.style.position='fixed';
+        s.style.left=(r.left+r.width*.3+Math.random()*r.width*.4)+'px';
+        s.style.top=(r.top)+'px';
+        s.style.animationDelay=(k*.18)+'s';
+        document.body.appendChild(s); setTimeout(()=>s.remove(),1900);
+      }
+      decir('¡'+f.nom+'! Mmm... ¿lo hueles de verdad? ¡Busca tu frasco!');
+    };
+    cont.appendChild(b);
+  });
+  const dado=document.createElement('button');
+  dado.className='sprite'; dado.id='dadoAromas';
+  dado.style.right='4%'; dado.style.bottom='6%'; dado.style.width='13%';
+  dado.innerHTML=`<svg viewBox="0 0 100 100">
+    <rect x="14" y="14" width="72" height="72" rx="16" fill="#fff" stroke="#9b7bff" stroke-width="4"/>
+    <circle cx="34" cy="34" r="7" fill="#ff5fa8"/><circle cx="66" cy="34" r="7" fill="#5cc8ff"/>
+    <circle cx="50" cy="50" r="7" fill="#ffd84d"/><circle cx="34" cy="66" r="7" fill="#76d275"/>
+    <circle cx="66" cy="66" r="7" fill="#9b7bff"/></svg>`;
+  dado.onclick=()=>{
+    dado.style.animation='tiembla .5s ease 2';
+    beep(300,.2,'square',.1);
+    setTimeout(()=>{
+      dado.style.animation='';
+      const f=FRASCOS[Math.floor(Math.random()*FRASCOS.length)];
+      const btn=cont.children[FRASCOS.indexOf(f)];
+      btn.classList.remove('brinca'); void btn.offsetWidth; btn.classList.add('brinca');
+      confeti(['✨','⭐']);
+      decir('¡El dado eligió '+f.nom+'! Busca ese frasco y huélelo.');
+    },1100);
+  };
+  cont.appendChild(dado);
+  decir('Toca un frasco del jardín y luego huélelo de verdad.');
+}
+
+/* ================== TACTO ================== */
+let tactoInit=false, masaPts=[], masaAnim=null, masaHue=32, mGrab=-1, mDown=false, mMx=0, mMy=0;
+function iniTacto(){
+  decir('Pasa tu dedo por las texturas. ¿Cuál te gusta más?');
+  iniMasa();
+  if(tactoInit) return;
+  tactoInit=true;
+  let last=0;
+  $('#texAlgodon').addEventListener('pointermove',ev=>{
+    if(Date.now()-last<90) return; last=Date.now();
+    const p=document.createElement('span'); p.className='pelusa';
+    const r=$('#texAlgodon').getBoundingClientRect();
+    p.style.left=(ev.clientX-r.left-8)+'px'; p.style.top=(ev.clientY-r.top-8)+'px';
+    p.style.width=p.style.height=(12+Math.random()*14)+'px';
+    $('#texAlgodon').appendChild(p); setTimeout(()=>p.remove(),1000);
+    beep(180+Math.random()*80,.25,'sine',.05);
+  });
+  $('#texAlgodon').addEventListener('pointerdown',()=>decir('Suave... como una nubecita.'));
+  let lastL=0;
+  $('#texLija').addEventListener('pointermove',ev=>{
+    if(Date.now()-lastL<70) return; lastL=Date.now();
+    beep(70+Math.random()*40,.06,'sawtooth',.12);
+    if(navigator.vibrate) navigator.vibrate(20);
+  });
+  $('#texLija').addEventListener('pointerdown',()=>decir('¡Áspera! Raspa un poquito.'));
+  $('#texPiedra').addEventListener('pointerdown',ev=>{
+    beep(120,.1,'square',.2); setTimeout(()=>beep(90,.12,'square',.15),120);
+    decir('Dura como una piedra. Toc, toc.');
+  });
+}
+function iniMasa(){
+  cancelAnimationFrame(masaAnim);
+  const cv=$('#masaCanvas'), ctx=cv.getContext('2d');
+  const r=cv.parentElement.getBoundingClientRect();
+  cv.width=r.width; cv.height=r.height;
+  const cx=cv.width/2, cy=cv.height/2, R=Math.min(cv.width,cv.height)*.3, N=14;
+  masaPts=Array.from({length:N},(_,i)=>{
+    const a=i/N*Math.PI*2;
+    return {bx:cx+Math.cos(a)*R, by:cy+Math.sin(a)*R, x:cx+Math.cos(a)*R, y:cy+Math.sin(a)*R, vx:0, vy:0};
+  });
+  (function loop(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const N=masaPts.length;
+    masaPts.forEach((p,i)=>{
+      if(i===mGrab && mDown){ p.x+=(mMx-p.x)*.4; p.y+=(mMy-p.y)*.4; p.vx=p.vy=0;
+        const pr=masaPts[(i-1+N)%N], nx=masaPts[(i+1)%N];
+        pr.vx+=(p.x-pr.x)*.02; pr.vy+=(p.y-pr.y)*.02;
+        nx.vx+=(p.x-nx.x)*.02; nx.vy+=(p.y-nx.y)*.02;
+      } else { p.vx+=(p.bx-p.x)*.06; p.vy+=(p.by-p.y)*.06; p.vx*=.86; p.vy*=.86; p.x+=p.vx; p.y+=p.vy; }
+    });
+    ctx.beginPath();
+    const mid=(a,b)=>({x:(a.x+b.x)/2,y:(a.y+b.y)/2});
+    let m0=mid(masaPts[N-1],masaPts[0]); ctx.moveTo(m0.x,m0.y);
+    for(let i=0;i<N;i++){ const p=masaPts[i], m=mid(p,masaPts[(i+1)%N]); ctx.quadraticCurveTo(p.x,p.y,m.x,m.y); }
+    ctx.closePath();
+    const c={x:masaPts.reduce((s,p)=>s+p.x,0)/N, y:masaPts.reduce((s,p)=>s+p.y,0)/N};
+    const g=ctx.createRadialGradient(c.x-20,c.y-26,10,c.x,c.y,Math.min(cv.width,cv.height)*.42);
+    g.addColorStop(0,`hsl(${masaHue},68%,74%)`); g.addColorStop(1,`hsl(${masaHue},60%,52%)`);
+    ctx.fillStyle=g; ctx.fill();
+    ctx.strokeStyle=`hsla(${masaHue},55%,38%,.6)`; ctx.lineWidth=3; ctx.stroke();
+    masaAnim=requestAnimationFrame(loop);
+  })();
+  if(!cv.dataset.ev){
+    cv.dataset.ev='1';
+    cv.addEventListener('pointerdown',e=>{
+      const r=cv.getBoundingClientRect(); mDown=true; mMx=e.clientX-r.left; mMy=e.clientY-r.top;
+      let best=1e9; masaPts.forEach((p,i)=>{ const d=Math.hypot(p.x-mMx,p.y-mMy); if(d<best){best=d;mGrab=i;} });
+      beep(240,.15,'sine',.1);
+    });
+    cv.addEventListener('pointermove',e=>{ if(!mDown)return; const r=cv.getBoundingClientRect();
+      mMx=e.clientX-r.left; mMy=e.clientY-r.top; });
+    addEventListener('pointerup',()=>{ if(mDown && Math.random()<.4){ masaHue=(masaHue+60)%360; }
+      mDown=false; mGrab=-1; });
+    cv.parentElement.addEventListener('pointerdown',()=>decir('¡Estírala! Es blandita.'),{once:true});
+  }
+}
+
+/* ================== GUSTO ================== */
+let gustoInit=false, ruletaGiro=0, ruletaOcupada=false;
+const SABORES=[
+  {nom:'dulce', col:'#ff8fc7', emo:'🍭', frase:'¡Dulce! Como el plátano y el yogur. ¿Probamos algo dulce de verdad?',
+   cara:'<ellipse cx="100" cy="120" rx="46" ry="70" fill="#ffe98a" stroke="#e0a92e" stroke-width="5"/><path d="M100 50 Q112 30 128 32" stroke="#8a5a3b" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="86" cy="106" r="7" fill="#3a2a4d"/><circle cx="114" cy="106" r="7" fill="#3a2a4d"/><path d="M84 132 Q100 148 116 132" stroke="#3a2a4d" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="76" cy="122" r="7" fill="#ffb3d5" opacity=".8"/><circle cx="124" cy="122" r="7" fill="#ffb3d5" opacity=".8"/>'},
+  {nom:'ácido', col:'#ffd84d', emo:'🍋', frase:'¡Ácido! Uyy, como el limón. ¡Mira qué carita! ¿Lo pruebas de verdad?',
+   cara:'<ellipse cx="100" cy="115" rx="62" ry="48" fill="#ffd84d" stroke="#c98a00" stroke-width="5"/><path d="M78 100 Q84 92 90 100 M110 100 Q116 92 122 100" stroke="#3a2a4d" stroke-width="5" fill="none" stroke-linecap="round"/><ellipse cx="100" cy="134" rx="10" ry="6" fill="#3a2a4d"/><path d="M56 88 Q48 80 52 72 M144 88 Q152 80 148 72" stroke="#c98a00" stroke-width="4" fill="none"/>'},
+  {nom:'salado', col:'#9adcff', emo:'🧂', frase:'¡Salado! Como la galletita y el quesito. ¿Probamos?',
+   cara:'<rect x="52" y="76" width="96" height="86" rx="18" fill="#ffe9c2" stroke="#c98a00" stroke-width="5"/><circle cx="72" cy="96" r="4" fill="#c98a00"/><circle cx="120" cy="90" r="4" fill="#c98a00"/><circle cx="96" cy="150" r="4" fill="#c98a00"/><circle cx="84" cy="112" r="6.4" fill="#3a2a4d"/><circle cx="116" cy="112" r="6.4" fill="#3a2a4d"/><path d="M84 134 Q100 146 116 134" stroke="#3a2a4d" stroke-width="5" fill="none" stroke-linecap="round"/>'},
+  {nom:'amargo', col:'#b48a6a', emo:'🍫', frase:'¡Amargo! Como el cacao. Solo un poquitito con mamá o papá.',
+   cara:'<rect x="54" y="70" width="92" height="96" rx="14" fill="#8a5a3b" stroke="#5a3620" stroke-width="5"/><line x1="100" y1="70" x2="100" y2="166" stroke="#5a3620" stroke-width="4"/><line x1="54" y1="118" x2="146" y2="118" stroke="#5a3620" stroke-width="4"/><circle cx="82" cy="98" r="6" fill="#fff"/><circle cx="118" cy="98" r="6" fill="#fff"/><circle cx="82" cy="99" r="3.4" fill="#3a2a4d"/><circle cx="118" cy="99" r="3.4" fill="#3a2a4d"/><path d="M86 142 Q100 136 114 142" stroke="#ffe9c2" stroke-width="5" fill="none" stroke-linecap="round"/>'},
+];
+const BEBIDAS=[
+  {nom:'agua', col:'rgba(180,225,255,.75)', borde:'#5cc8ff', frase:'¡Agua fresquita! Glu, glu.'},
+  {nom:'leche', col:'#fff', borde:'#d8cbe8', frase:'¡Lechita! Mmm, rica.'},
+  {nom:'jugo', col:'#ffab5e', borde:'#f18f2f', frase:'¡Juguito de naranja!'},
+  {nom:'yogur', col:'#ffc4e2', borde:'#ff5fa8', frase:'¡Yogur! Cremosito.'},
+];
+function iniGusto(){
+  decir('Toca la ruleta para descubrir un sabor.');
+  if(gustoInit) return;
+  gustoInit=true;
+  const svg=$('#ruletaSvg');
+  let paths='';
+  SABORES.forEach((s,i)=>{
+    const a0=(i*90-90)*Math.PI/180, a1=((i+1)*90-90)*Math.PI/180;
+    const x0=Math.cos(a0)*100, y0=Math.sin(a0)*100, x1=Math.cos(a1)*100, y1=Math.sin(a1)*100;
+    const mx=Math.cos((a0+a1)/2)*62, my=Math.sin((a0+a1)/2)*62;
+    paths+=`<path d="M0 0 L${x0} ${y0} A100 100 0 0 1 ${x1} ${y1} Z" fill="${s.col}" stroke="#fff" stroke-width="4"/>
+      <text x="${mx}" y="${my+9}" font-size="30" text-anchor="middle">${s.emo}</text>`;
+  });
+  svg.innerHTML=paths+'<circle cx="0" cy="0" r="16" fill="#fff" stroke="#d8cbe8" stroke-width="4"/>';
+  $('#ruletaWrap').onclick=()=>{
+    if(ruletaOcupada) return; ruletaOcupada=true;
+    $('#hintGusto').style.visibility='hidden';
+    const extra=1440+Math.random()*360;
+    ruletaGiro+=extra;
+    svg.style.transform=`rotate(${ruletaGiro}deg)`;
+    beep(400,.2,'sine',.15);
+    const iv=setInterval(()=>beep(300+Math.random()*200,.05,'sine',.06),200);
+    setTimeout(()=>{
+      clearInterval(iv);
+      const ang=((-ruletaGiro % 360)+360+270)%360;
+      const s=SABORES[Math.floor(ang/90)%4];
+      $('#comidaSvg').innerHTML=s.cara;
+      $('#comidaPop').classList.add('on');
+      confeti(['✨','💛','⭐']);
+      decir(s.frase);
+      setTimeout(()=>{ $('#comidaPop').classList.remove('on'); ruletaOcupada=false;
+        $('#hintGusto').style.visibility='visible'; },3400);
+    },3300);
+  };
+  $('#comidaPop').onclick=()=>{ $('#comidaPop').classList.remove('on'); ruletaOcupada=false;
+    $('#hintGusto').style.visibility='visible'; };
+  const row=$('#vasosRow');
+  BEBIDAS.forEach((b,i)=>{
+    const v=document.createElement('button');
+    v.className='vaso';
+    v.innerHTML=`<svg viewBox="0 0 100 110">
+      <path d="M26 18 L32 92 Q33 100 50 100 Q67 100 68 92 L74 18 Z" fill="rgba(230,240,255,.5)" stroke="#9fc6e8" stroke-width="3"/>
+      <path d="M30 42 L33 90 Q34 97 50 97 Q66 97 67 90 L70 42 Z" fill="${b.col}" stroke="${b.borde}" stroke-width="2"/>
+      <circle cx="43" cy="62" r="3.4" fill="#3a2a4d"/><circle cx="57" cy="62" r="3.4" fill="#3a2a4d"/>
+      <path d="M43 72 Q50 78 57 72" stroke="#3a2a4d" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="18" rx="24" ry="6" fill="#eaf6ff" stroke="#9fc6e8" stroke-width="3"/>
+    </svg><div style="font-size:13px;font-weight:700;color:#7a5a8a">${b.nom}</div>`;
+    v.onclick=()=>{
+      v.classList.remove('wob'); void v.offsetWidth; v.classList.add('wob');
+      beep(300,.1,'sine',.15); setTimeout(()=>beep(260,.1,'sine',.12),150); setTimeout(()=>beep(220,.12,'sine',.1),300);
+      decir(b.frase+' ¿La pruebas de verdad?');
+    };
+    row.appendChild(v);
+  });
+}
+
+/* ================== FAMILIA ================== */
+const PROPUESTAS=[
+  {emo:'🧺', nom:'Cesta de los tesoros', yt:'HYOrWiLz29w',
+   txt:'Una cesta con objetos naturales y cotidianos seguros para que el niño los descubra a su ritmo.',
+   mats:['Cesta o caja baja','Objetos de madera, tela y metal seguros','Elementos naturales grandes'],
+   consejo:'💡 Deja que el niño elija qué sacar. No le muestres "cómo se usa": obsérvalo descubrir.'},
+  {emo:'🔮', nom:'Holograma 3D', yt:'qsLf7Brk30E',
+   txt:'Con cartón y acetato se construye una pirámide que proyecta imágenes en 3D desde el celular.',
+   mats:['Acetato o mica transparente','Cartón','Tijeras y cinta','Celular con video de holograma'],
+   consejo:'💡 Úsenlo en un cuarto oscuro para el efecto mágico. El asombro compartido vale oro.'},
+  {emo:'🌿', nom:'Caja de aromas', yt:'SG_RW93UicI',
+   txt:'Frascos con aromas de la cocina para oler y descubrir, cada uno con su ilustración.',
+   mats:['Frascos pequeños','Limón, naranja, café, canela, lavanda, hierbabuena','Etiquetas con dibujos'],
+   consejo:'💡 Ofrece un frasco a la vez y nombra el aroma. Si un olor no le gusta, respétalo.'},
+  {emo:'💧', nom:'Exploración con agua', yt:'UhKB7hdoG34',
+   txt:'Recipientes con agua y utensilios para trasvasar, exprimir y descubrir.',
+   mats:['Recipiente grande con poca agua','Vasos, embudos, coladores','Esponjas y toalla'],
+   consejo:'💡 Siempre con supervisión. Prepara el piso para mojarse sin problema: la libertad es la clave.'},
+  {emo:'🍊', nom:'Descubriendo frutas', yt:'XAsMl7HOpGw',
+   txt:'Frutas enteras y cortadas para mirar, tocar, oler y probar.',
+   mats:['Frutas de colores distintos','Tabla y platos','Fruta cortada segura para probar'],
+   consejo:'💡 Deja que toque y huela antes de probar. Nombra cada fruta con calma.'},
+  {emo:'🌼', nom:'Naturaleza en casa', yt:'DEkUdrGrnyU',
+   txt:'Un rinconcito con hojas, flores, semillas y piedras recolectadas juntos.',
+   mats:['Hojas, flores y semillas grandes','Piedras lisas','Bandeja o canasta'],
+   consejo:'💡 Recolecten juntos en el parque: el paseo también es exploración.'},
+  {emo:'🫓', nom:'Mesa de masas sensoriales', yt:'I_BwWKlk8Rg',
+   txt:'Masa casera segura para amasar, estirar y moldear libremente.',
+   mats:['Harina, agua y sal (masa casera)','Colorante natural','Mantel o bandeja'],
+   consejo:'💡 La masa casera es segura si se la lleva a la boca. Amasen juntos, sin un "modelo" que copiar.'},
+];
+const gridFam=$('#gridFam');
+PROPUESTAS.forEach(p=>{
+  const d=document.createElement('div'); d.className='famCard';
+  d.innerHTML=`<span class="emo">${p.emo}</span>${p.nom}`;
+  d.onclick=()=>{
+    pop();
+    $('#propTitulo').textContent=p.emo+' '+p.nom;
+    $('#propTexto').textContent=p.txt;
+    $('#propMats').innerHTML=p.mats.map(m=>`<li>${m}</li>`).join('');
+    $('#propConsejo').textContent=p.consejo;
+    $('#propVideo').innerHTML=p.yt?videoYT(p.yt):'';
+    $('#overlayProp').classList.add('activa');
+  };
+  gridFam.appendChild(d);
+});
+$('#btnPropOk').onclick=()=>{ $('#overlayProp').classList.remove('activa'); $('#propVideo').innerHTML=''; };
+function videoYT(id){
+  if(location.protocol==='file:'){
+    return `<a class="videoBox" style="position:relative;text-decoration:none"
+      href="https://www.youtube.com/watch?v=${id}" target="_blank" rel="noopener">
+      <img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg" alt="Video"
+        style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.8">
+      <span style="position:relative;color:#fff;font-weight:700;font-size:20px;text-shadow:0 2px 8px #000">▶ Ver video</span></a>`;
+  }
+  return `<div class="videoBox"><iframe loading="lazy"
+    src="https://www.youtube-nocookie.com/embed/${id}?rel=0"
+    allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
+}
+
+/* ================== CALMA ================== */
+const cb=$('#lienzoBurbujas'), ctxB=cb.getContext('2d');
+let burbujas=[], animCalma=null;
+const musCalma=$('#musCalma'), asmrAudio=$('#asmrAudio');
+let asmrOn=null;
+function nuevaBurbuja(){
+  const r=22+Math.random()*40;
+  return {x:Math.random()*innerWidth, y:innerHeight+r, r,
+    vy:-(.5+Math.random()*.9), vx:(Math.random()-.5)*.5,
+    hue:200+Math.random()*120, fase:Math.random()*6};
+}
+function pararCalma(){
+  cancelAnimationFrame(animCalma);
+  asmrAudio.pause(); musCalma.pause(); asmrOn=null;
+  document.querySelectorAll('.asmrBtn').forEach(b=>b.classList.remove('on'));
+  if(musOn) musica.volume=VOL;
+}
+function iniCalma(){
+  cb.width=innerWidth; cb.height=innerHeight;
+  burbujas=Array.from({length:12},nuevaBurbuja);
+  cancelAnimationFrame(animCalma); loopCalma();
+  if(musOn) musica.volume=.02;
+}
+function loopCalma(){
+  ctxB.clearRect(0,0,cb.width,cb.height);
+  burbujas.forEach(b=>{
+    b.y+=b.vy; b.x+=b.vx+Math.sin((b.y+b.fase*40)/60)*.4;
+    if(b.y<-b.r) Object.assign(b,nuevaBurbuja());
+    const g=ctxB.createRadialGradient(b.x-b.r/3,b.y-b.r/3,b.r/6,b.x,b.y,b.r);
+    g.addColorStop(0,'rgba(255,255,255,.85)');
+    g.addColorStop(.4,`hsla(${b.hue},80%,75%,.4)`);
+    g.addColorStop(1,`hsla(${b.hue},80%,65%,.15)`);
+    ctxB.beginPath(); ctxB.arc(b.x,b.y,b.r,0,7); ctxB.fillStyle=g; ctxB.fill();
+    ctxB.strokeStyle='rgba(255,255,255,.45)'; ctxB.stroke();
+  });
+  animCalma=requestAnimationFrame(loopCalma);
+}
+cb.addEventListener('pointerdown',ev=>{
+  for(let i=burbujas.length-1;i>=0;i--){
+    const b=burbujas[i], d=Math.hypot(ev.clientX-b.x,ev.clientY-b.y);
+    if(d<b.r){ beep(400+Math.random()*300,.3,'sine',.12); Object.assign(b,nuevaBurbuja()); return; }
+  }
+  if(ev.clientY<innerHeight*.6){
+    const s=document.createElement('span'); s.className='estrellaC';
+    s.textContent=['✦','✧','⭐','✨'][Math.floor(Math.random()*4)];
+    s.style.left=ev.clientX+'px'; s.style.top=ev.clientY+'px';
+    s.style.fontSize=(14+Math.random()*18)+'px';
+    $('#cieloEstrellas').appendChild(s);
+    nota(Math.floor(Math.random()*6));
+    if($('#cieloEstrellas').children.length>40) $('#cieloEstrellas').firstChild.remove();
+  }
+});
+document.querySelectorAll('.asmrBtn[data-asmr]').forEach(b=>{
+  b.onclick=()=>{
+    const k=b.dataset.asmr;
+    if(asmrOn===k){
+      asmrAudio.pause(); asmrOn=null; b.classList.remove('on');
+      if(musOn && musCalma.paused) musica.play().catch(()=>{});
+      return;
+    }
+    document.querySelectorAll('.asmrBtn[data-asmr]').forEach(x=>x.classList.remove('on'));
+    asmrOn=k; b.classList.add('on');
+    musica.pause(); musCalma.pause(); $('#btnMusCalma').classList.remove('on');
+    asmrAudio.src='assets/asmr/'+k+'.mp3'; asmrAudio.volume=.75;
+    asmrAudio.play().catch(()=>{});
+  };
+});
+$('#btnMusCalma').onclick=function(){
+  if(musCalma.paused){
+    musCalma.volume=.4; musCalma.play().catch(()=>{}); this.classList.add('on');
+    musica.pause();
+    asmrAudio.pause(); asmrOn=null;
+    document.querySelectorAll('.asmrBtn[data-asmr]').forEach(x=>x.classList.remove('on'));
+  }
+  else { musCalma.pause(); this.classList.remove('on'); if(musOn) musica.play().catch(()=>{}); }
+};
+$('#ositoSvg').innerHTML=`
+  <circle cx="60" cy="52" r="24" fill="#c89b6e"/><circle cx="140" cy="52" r="24" fill="#c89b6e"/>
+  <circle cx="60" cy="54" r="13" fill="#e8c9a0"/><circle cx="140" cy="54" r="13" fill="#e8c9a0"/>
+  <ellipse cx="100" cy="105" rx="66" ry="62" fill="#c89b6e"/>
+  <ellipse cx="100" cy="128" rx="34" ry="26" fill="#e8c9a0"/>
+  <circle cx="80" cy="92" r="8" fill="#3a2a4d"/><circle cx="120" cy="92" r="8" fill="#3a2a4d"/>
+  <circle cx="83" cy="89" r="2.6" fill="#fff"/><circle cx="123" cy="89" r="2.6" fill="#fff"/>
+  <ellipse cx="100" cy="116" rx="9" ry="7" fill="#3a2a4d"/>
+  <path d="M100 123 L100 132 M100 132 Q88 142 80 134 M100 132 Q112 142 120 134"
+    stroke="#3a2a4d" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <circle cx="66" cy="112" r="7" fill="#f4b8c8" opacity=".7"/><circle cx="134" cy="112" r="7" fill="#f4b8c8" opacity=".7"/>
+  <ellipse cx="100" cy="196" rx="46" ry="14" fill="rgba(255,230,180,.25)"/>`;
+
+/* ================== ARRANQUE + RUTAS QR ================== */
+function rutaInicial(){
+  const h=location.hash;
+  if(h.startsWith('#rama=')){
+    const r=h.slice(6);
+    if(RAMAS.includes(r)){ ir('arbol'); document.querySelector(`.fruto[data-rama="${r}"]`).click(); return; }
+  }
+  if(h==='#calma'){ ir('calma'); return; }
+  if(h==='#familia'){ ir('familia'); return; }
+  ir('inicio');
+}
+rutaInicial();
+
+</script>
+</body>
+</html>
