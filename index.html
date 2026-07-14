@@ -15,12 +15,15 @@
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent; margin:0; padding:0}
   html,body{height:100%; overflow:hidden}
   body{font-family:'Fredoka','Comic Sans MS','Chalkboard SE','Segoe UI Rounded',system-ui,sans-serif;
-    color:var(--texto); background:#1b1740; user-select:none; touch-action:manipulation}
+    color:var(--texto); background:#1b1740; user-select:none; touch-action:manipulation;
+    -webkit-touch-callout:none}
+  img{-webkit-user-drag:none; user-select:none}
+  #vista{touch-action:none}
   .screen{position:fixed; inset:0; display:none; flex-direction:column;
     align-items:center; justify-content:center; padding:18px; overflow:hidden}
   .screen.activa{display:flex; animation:fade .5s ease}
   @keyframes fade{from{opacity:0; transform:scale(.985)} to{opacity:1; transform:none}}
-  .fondoImg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0}
+  .fondoImg{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; pointer-events:none}
   #inicio .titulo, #inicio .sub, #inicio .btn{position:relative; z-index:2}
   #despedida .globo, #despedida .btn{position:relative; z-index:2}
   #tacto .tituloSec, #tacto .gridTex, #gusto>*, #familia>*{position:relative; z-index:1}
@@ -191,6 +194,41 @@
   .chispa{position:absolute; pointer-events:none; transform:translate(-50%,-50%); animation:chispaAnim .65s ease-out forwards}
   @keyframes chispaAnim{0%{opacity:1; transform:translate(-50%,-50%) scale(.4)}
     100%{opacity:0; transform:translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.15)}}
+
+  /* ---------- MÓVIL ---------- */
+  #giraOverlay{display:none; position:fixed; inset:0; z-index:200; background:linear-gradient(160deg,#9b7bff,#ff8fc7);
+    flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center; padding:24px}
+  #giraOverlay .fone{font-size:64px; animation:giraAnim 1.8s ease-in-out infinite}
+  @keyframes giraAnim{0%,100%{transform:rotate(0)} 50%{transform:rotate(90deg)}}
+  #giraOverlay p{color:#fff; font-size:22px; font-weight:700; text-shadow:0 2px 8px rgba(0,0,0,.3)}
+  @media (orientation:portrait) and (max-width:880px){
+    #giraOverlay{display:flex}
+  }
+  @media (max-height:500px){
+    .btn.grande{padding:16px 44px; font-size:clamp(20px,4.5vw,28px)}
+    .tituloSec{font-size:clamp(18px,4vw,26px); margin-bottom:4px}
+    .hint{font-size:15px; padding:6px 16px}
+    #vista .hint, #oido .hint, #olfato .hint{top:58px !important}
+    .iconbtn{width:42px; height:42px; font-size:19px}
+    .volver{width:48px; height:48px; font-size:22px}
+    .topbar{padding:8px 10px}
+    .fruto{width:clamp(56px,12vh,80px); height:clamp(56px,12vh,80px); font-size:clamp(26px,6vh,38px)}
+    .fruto small{font-size:11px; bottom:-18px}
+    .gridTex{height:min(62vh,380px); gap:8px; width:min(92vw,640px)}
+    #ruletaWrap{width:min(34vh,220px)}
+    .vaso{width:clamp(46px,8vh,64px)}
+    .vasosRow{gap:8px; margin-top:8px}
+    .asmrBtn{width:46px; height:46px; font-size:20px}
+    .asmrBar{bottom:10px; gap:8px}
+    #ositoSvg{width:clamp(80px,16vh,120px)}
+    .modal{padding:18px 16px; max-height:94vh}
+    .modal p{font-size:15px}
+    .mats ul{font-size:14.5px}
+    #inicio .titulo{font-size:clamp(26px,6.4vw,48px)}
+    .famCard{padding:10px 8px; font-size:14px}
+    .famCard .emo{font-size:30px}
+    .gridFam{gap:9px; grid-template-columns:repeat(auto-fit,minmax(110px,1fr))}
+  }
 </style>
 </head>
 <body>
@@ -360,6 +398,10 @@
   </div>
 </div>
 
+<div id="giraOverlay">
+  <div class="fone">📱</div>
+  <p>Gira tu pantalla para<br>explorar mejor 🔄</p>
+</div>
 <div id="frascoPop" style="position:fixed;inset:0;z-index:45;display:none;flex-direction:column;align-items:center;justify-content:center;background:rgba(30,20,55,.5)">
   <div id="frascoPopIn" style="width:min(46vw,240px);animation:brinca 1s ease infinite"></div>
 </div>
@@ -455,6 +497,7 @@ function confeti(EMO){
     cont.appendChild(s); setTimeout(()=>s.remove(),4200);
   }
 }
+document.addEventListener('contextmenu',ev=>ev.preventDefault());
 document.addEventListener('pointerdown',ev=>{
   const cont=$('#confeti'), EMO=['✨','⭐','✦'];
   for(let i=0;i<5;i++){
@@ -562,16 +605,24 @@ function iniVista(){
         }
       });
     });
-    const esc=$('#vista'); let hold=null;
+    const esc=$('#vista'); let hold=null, shhhDicho=false;
     esc.addEventListener('pointerdown',ev=>{
       if(ev.target.classList.contains('lente')) return;
-      hold=setTimeout(()=>{ oscuroOn=true; linterna(ev.clientX,ev.clientY);
-        decir('¡Shhh! Busca las sombras con tu linterna.'); },380);
+      ev.preventDefault();
+      try{ esc.setPointerCapture(ev.pointerId); }catch(e){}
+      hold=setTimeout(()=>{
+        oscuroOn=true; linterna(ev.clientX,ev.clientY);
+        if(!shhhDicho){ shhhDicho=true; decir('¡Shhh! Busca las sombras con tu linterna.'); }
+      },380);
     });
-    esc.addEventListener('pointermove',ev=>{ if(oscuroOn) linterna(ev.clientX,ev.clientY); });
-    addEventListener('pointerup',()=>{ clearTimeout(hold);
+    esc.addEventListener('pointermove',ev=>{
+      if(oscuroOn){ ev.preventDefault(); linterna(ev.clientX,ev.clientY); }
+    });
+    const finLinterna=()=>{ clearTimeout(hold);
       if(oscuroOn){ oscuroOn=false; $('#oscuro').style.opacity='0';
-        document.querySelectorAll('.silueta').forEach(s=>s.style.opacity='0'); } });
+        document.querySelectorAll('.silueta').forEach(s=>s.style.opacity='0'); } };
+    addEventListener('pointerup',finLinterna);
+    addEventListener('pointercancel',finLinterna);
   }
   lenteOn=null; $('#tinte').style.opacity='0';
   document.querySelectorAll('.lente').forEach(x=>x.classList.remove('on'));
